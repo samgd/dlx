@@ -2,10 +2,10 @@ class Node
   attr_accessor :up, :right, :down, :left
 
   def initialize(up = self, right = self, down = self, left = self)
-    @up = up
+    @up    = up
     @right = right
-    @down = down
-    @left = left
+    @down  = down
+    @left  = left
   end
 
   def link(nodes)
