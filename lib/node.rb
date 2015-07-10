@@ -4,6 +4,10 @@ class Node
   def initialize(up = self, right = self, down = self, left = self)
   end
 
+  def link(nodes)
+    nodes.each_pair { |dir, node| instance_variable_set("@#{dir}", node) }
+  end
+
   def remove(type)
     case type
     when :row

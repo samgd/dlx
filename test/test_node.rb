@@ -14,13 +14,20 @@ class TestNode < MiniTest::Test
     # Link nodes to create a toroidal array
     (0..2).each do |r|
       (0..2).each do |c|
-        link(@nodes[r][c],
-             @nodes[(r-1)%3][c],
-             @nodes[r][(c+1)%3],
-             @nodes[(r+1)%3][c],
-             @nodes[r][(r-1)%3])
+        @nodes[r][c].link({ up:    @nodes[(r-1)%3][c],
+                            right: @nodes[r][(c+1)%3],
+                            down:  @nodes[(r+1)%3][c],
+                            left:  @nodes[r][(r-1)%3] })
       end
     end
+  end
+
+  def test_setup_node_not_self_linked
+    mid_node = @nodes[1][1]
+    refute_equal mid_node, mid_node.up
+    refute_equal mid_node, mid_node.right
+    refute_equal mid_node, mid_node.down
+    refute_equal mid_node, mid_node.left
   end
 
   def test_remove_and_restore_node_from_row
@@ -41,12 +48,5 @@ class TestNode < MiniTest::Test
     mid_node.restore(:column)
     assert_equal @nodes[0][1].down, mid_node
     assert_equal @nodes[2][1].up,   mid_node
-  end
-
-  def link(node, up, right, down, left)
-    node.up    = up
-    node.right = right
-    node.down  = down
-    node.left  = left
   end
 end
