@@ -56,6 +56,7 @@ class TestSparseMatrix < MiniTest::Test
       assert_equal @sparse_matrix.next_header, header
       header.remove(:row)
     end
-    assert_nil @sparse_matrix.next_header
+    assert_nil @sparse_matrix.next_header,
+      "No headers should mean next_header returns nil"
   end
 end
