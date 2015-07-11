@@ -18,4 +18,15 @@ class SparseMatrix
     end
     min_header
   end
+
+  # Removes given node's column from matrix. Removes each node in same row as
+  # given node from their columns
+  def cover(node)
+    node.header.remove(:row)
+    node.header.each_in(:down) do |row|
+      row.each_in(:right) do |node|
+        node.remove(:column)
+      end
+    end
+  end
 end
