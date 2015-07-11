@@ -49,4 +49,12 @@ class TestSparseMatrix < MiniTest::Test
 
     @spare_matrix = SparseMatrix.new(@header_index)
   end
+
+  def test_next_header_has_smallest_total
+    assert_equal @spare_matrix.next_header, @header_0
+    @header_0.remove(:row)
+    assert_equal @sparse_matrix.next_header, @header_1
+    @header_1.remove(:row)
+    assert_equal @sparse_matrix.next_header, @header_2
+  end
 end
