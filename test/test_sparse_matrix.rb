@@ -50,6 +50,10 @@ class TestSparseMatrix < MiniTest::Test
     @sparse_matrix = SparseMatrix.new(@header_index)
   end
 
+  def test_sparse_matrix_header_is_header
+    assert_equal @header_index, @sparse_matrix.header_index
+  end
+
   def test_next_header_has_smallest_total
     (0..2).each do |header_index|
       header = instance_variable_get("@header_#{header_index}")
