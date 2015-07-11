@@ -38,23 +38,8 @@ class Node
   # Begins with yieding adjacent node, breaks _before_ yielding self.
   def each_in(direction)
     node = self
-    case direction
-    when :up
-      until (node = node.up) == self do
-        yield node
-      end
-    when :right
-      until (node = node.right) == self do
-        yield node
-      end
-    when :down
-      until (node = node.down) == self do
-        yield node
-      end
-    when :left
-      until (node = node.left) == self do
-        yield node
-      end
+    until (node = node.instance_variable_get("@#{direction}")) == self do
+      yield node
     end
   end
 end
