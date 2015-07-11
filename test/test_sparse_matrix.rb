@@ -63,4 +63,15 @@ class TestSparseMatrix < MiniTest::Test
     assert_nil @sparse_matrix.next_header,
       "No headers should mean next_header returns nil"
   end
+
+  def test_cover_node_removes_column_row_from_all_columns
+    @sparse_matrix.cover(@nodes[1][1])
+    h_i = @sparse_matrix.header_index
+    # Check header is removed
+    assert_equal @header_0,     h_i.right
+    assert_equal @header_2,     h_i.right.right
+    assert_equal @header_index, h_i.right.right.right
+    # Check node in row is removed
+    assert_equal @nodes[2][2], @header_2.down
+  end
 end
