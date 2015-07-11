@@ -9,11 +9,8 @@ class Header < Node
   private
 
   def calc_total
-    node = self
     @total = 0
-    until (node = node.down) == self do
-      @total += 1
-    end
+    each_in(:down) { |node| @total += 1 }
     @total
   end
 end
