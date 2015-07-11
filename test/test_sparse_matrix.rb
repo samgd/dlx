@@ -11,7 +11,7 @@ class TestSparseMatrix < MiniTest::Test
     @nodes = Hash.new{ |h,k| h[k] = Hash.new }
 
     (0..2).each do |header_id|
-      instance_variable_set("@header_#{id}", Node.new)
+      instance_variable_set("@header_#{header_id}", Header.new)
       (0..header_id).each do |node_id|
         @nodes[header_id][node_id] = Node.new
       end
@@ -45,13 +45,13 @@ class TestSparseMatrix < MiniTest::Test
 
     assert_equal 1, @header_0.total
     assert_equal 2, @header_1.total
-    assert_equal 3, @header_3.total
+    assert_equal 3, @header_2.total
 
-    @spare_matrix = SparseMatrix.new(@header_index)
+    @sparse_matrix = SparseMatrix.new(@header_index)
   end
 
   def test_next_header_has_smallest_total
-    assert_equal @spare_matrix.next_header, @header_0
+    assert_equal @sparse_matrix.next_header, @header_0
     @header_0.remove(:row)
     assert_equal @sparse_matrix.next_header, @header_1
     @header_1.remove(:row)
