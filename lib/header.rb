@@ -2,6 +2,10 @@ require_relative 'node'
 
 class Header < Node
 
+  def initialize
+    @header = self
+  end
+
   def total
     @total ||= calc_total
   end

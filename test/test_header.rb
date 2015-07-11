@@ -19,4 +19,9 @@ class TestHeader < MiniTest::Test
   def test_header_total_equals_sum_of_nodes_in_column
     assert_equal 2, @header.total
   end
+
+  def test_nodes_return_correct_header
+    assert_equal @header, @node_1.header
+    assert_equal @header, @node_2.header
+  end
 end
