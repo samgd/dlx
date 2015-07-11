@@ -74,4 +74,17 @@ class TestSparseMatrix < MiniTest::Test
     # Check node in row is removed
     assert_equal @nodes[2][2], @header_2.down
   end
+
+  def test_uncover_node_restores_from_cover
+    @sparse_matrix.cover(@nodes[1][1])
+    @sparse_matrix.uncover(@nodes[1][1])
+    h_i = @sparse_matrix.header_index
+    # Check header is restored
+    assert_equal @header_0,     h_i.right
+    assert_equal @header_1,     h_i.right.right
+    assert_equal @header_2,     h_i.right.right.right
+    assert_equal @header_index, h_i.right.right.right.right
+    # Check node in row is restored
+    assert_equal @nodes[2][1], @header_2.down
+  end
 end

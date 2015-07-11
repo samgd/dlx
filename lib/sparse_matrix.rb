@@ -29,4 +29,7 @@ class SparseMatrix
       end
     end
   end
+
+  def uncover(node)
+  end
 end
