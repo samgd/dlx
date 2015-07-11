@@ -24,4 +24,8 @@ class TestHeader < MiniTest::Test
     assert_equal @header, @node_1.header
     assert_equal @header, @node_2.header
   end
+
+  def test_header_returns_header_as_self
+    assert_equal @header, @header.header
+  end
 end

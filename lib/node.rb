@@ -1,11 +1,15 @@
 class Node
-  attr_accessor :up, :right, :down, :left, :header
+  attr_accessor :up, :right, :down, :left
 
   def initialize(up = self,   right = self, down = self, left = self)
     @up     = up
     @right  = right
     @down   = down
     @left   = left
+  end
+
+  def header
+    @header ||= each_in(:down) { |node| return node if node.instance_of? Header }
   end
 
   def link(nodes)
