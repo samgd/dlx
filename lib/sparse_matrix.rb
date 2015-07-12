@@ -30,6 +30,13 @@ class SparseMatrix
     end
   end
 
+  # Reverses cover.
   def uncover(node)
+    node.header.each_in(:up) do |row|
+      row.each_in(:left) do |n|
+        n.restore(:column)
+      end
+    end
+    node.header.restore(:row)
   end
 end
