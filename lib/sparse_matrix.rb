@@ -84,4 +84,28 @@ class SparseMatrix
     end
     node.header.restore(:row)
   end
+
+  private
+
+  def create_matrix
+    @matrix = Hash.new { |h,k| h[k] = Hash.new }
+    # Set column headers.
+    (0...@width).each { |j| @matrix[0][j] = Header.new }
+    @string_rows.each_with_index do |row, i|
+      row.each_with_index do |letter, j|
+        @matrix[i][j] = Node.new
+      end
+    end
+
+    # Link header index.
+    @header_index.right = @matrix[0][0]
+    @header_index.left  = @matrix[0][@width - 1]
+
+    # TODO: Link nodes in matrix
+  end
+
+  # Find next node in dir, starting from node.
+  def next_in(dir, i, j)
+    # TODO: Fill in!
+  end
 end
