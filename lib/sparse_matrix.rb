@@ -6,12 +6,38 @@ class SparseMatrix
 
   def initialize(header_index)
     @header_index = header_index
+    @solution = Array.new
+  end
+
+  def solve(&b)
+    if next_header.nil?
+      b.call(@solution.dup)
+    else
+      header = next_header
+      cover(header)
+
+      header.each_in(:down) do |rowNode|
+        @solution.push(rowNode)
+
+        rowNode.each_in(:right) do |rightNode|
+          cover(rightNode)
+        end
+
+        solve(&b)
+        @solution.delete(rowNode)
+
+        rowNode.each_in(:left) do |leftNode|
+          uncover(leftNode)
+        end
+      end
+      uncover(header)
+    end
   end
 
   # Returns header with least total.
   def next_header
     min_header = nil
-    header_index.each_in(:right) do |header|
+    @header_index.each_in(:right) do |header|
       if !min_header || header.total < min_header.total
         min_header = header
       end
@@ -24,8 +50,8 @@ class SparseMatrix
   def cover(node)
     node.header.remove(:row)
     node.header.each_in(:down) do |row|
-      row.each_in(:right) do |node|
-        node.remove(:column)
+      row.each_in(:right) do |n|
+        n.remove(:column)
       end
     end
   end

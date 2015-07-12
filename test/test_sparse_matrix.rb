@@ -25,14 +25,12 @@ class TestSparseMatrix < MiniTest::Test
     @nodes[0][0].link({up:   @header_0, right: @nodes[1][0],
                        down: @header_0, left:  @nodes[2][0] })
 
-
     @header_1.link({ up:   @nodes[1][1], right: @header_2,
                      down: @nodes[1][0], left:  @header_0 })
     @nodes[1][0].link({up:   @header_1,    right: @nodes[2][0],
                        down: @nodes[1][1], left:  @nodes[0][0] })
     @nodes[1][1].link({up:   @nodes[1][0], right: @nodes[2][1],
                        down: @header_1,    left:  @nodes[2][1] })
-
 
     @header_2.link({ up:   @nodes[2][2], right: @header_index,
                      down: @nodes[2][0], left:  @header_1 })
@@ -87,4 +85,35 @@ class TestSparseMatrix < MiniTest::Test
     # Check node in row is restored
     assert_equal @nodes[2][0], @header_2.down
   end
+
+  def test_solve_yields_correct_solutions_array
+    solutions = Array.new
+    @sparse_matrix.solve do |solution|
+      solutions << solution
+    end
+    # Should be one solution.
+    assert_equal 1, solutions.length
+    # Solution should have one row.
+    assert_equal 1, solutions[0].length
+    # Solution in row should be node.
+    assert_instance_of Node, solutions[0][0]
+    assert_equal solutions[0][0], solutions[0][0].right.right.right
+  end
+
+  def test_solve_yields_correct_solution_when_two_rows_required
+    # Remove node from first row
+    @nodes[2][0].remove(:row)
+    @nodes[2][0].remove(:column)
+
+    solutions = Array.new
+    @sparse_matrix.solve do |solution|
+      solutions << solution
+    end
+
+    assert_equal 1, solutions.length
+    assert_equal 2, solutions[0].length
+    assert_equal solutions[0][0], solutions[0][0].right.right
+    assert_equal solutions[0][1], solutions[0][1].right
+  end
+
 end
