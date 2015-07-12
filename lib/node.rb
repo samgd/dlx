@@ -1,7 +1,7 @@
 class Node
   attr_accessor :up, :right, :down, :left
 
-  def initialize(up = self,   right = self, down = self, left = self)
+  def initialize(up = self, right = self, down = self, left = self)
     @up     = up
     @right  = right
     @down   = down
