@@ -85,6 +85,6 @@ class TestSparseMatrix < MiniTest::Test
     assert_equal @header_2,     h_i.right.right.right
     assert_equal @header_index, h_i.right.right.right.right
     # Check node in row is restored
-    assert_equal @nodes[2][1], @header_2.down
+    assert_equal @nodes[2][0], @header_2.down
   end
 end
