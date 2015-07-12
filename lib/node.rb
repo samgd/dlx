@@ -13,7 +13,7 @@ class Node
   end
 
   def link(nodes)
-    nodes.each_pair { |dir, node| instance_variable_set("@#{dir}", node) }
+    nodes.each_pair { |dir, node| send("#{dir}=", node) }
   end
 
   def remove(type)
@@ -42,7 +42,7 @@ class Node
   # Begins with yieding adjacent node, breaks _before_ yielding self.
   def each_in(direction)
     node = self
-    until (node = node.instance_variable_get("@#{direction}")) == self do
+    until (node = node.send(direction)) == self do
       yield node
     end
   end
