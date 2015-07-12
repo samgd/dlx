@@ -116,4 +116,17 @@ class TestSparseMatrix < MiniTest::Test
     assert_equal solutions[0][1], solutions[0][1].right
   end
 
+  def test_adding_invalid_row_raises_exception
+    assert_equal 0, @sparse_matrix.width
+    assert_equal 0, @sparse_matrix.height
+
+    assert_raises(ArgumentError) { @sparse_matrix << "" }
+
+    @sparse_matrix << "0" * 10
+    assert_equal 10, @sparse_matrix.width
+    assert_equal 1,  @sparse_matrix.height
+
+    assert_raises(ArgumentError) { @sparse_matrix << "1" * 9 }
+    assert_raises(ArgumentError) { @sparse_matrix << "1" * 11 }
+  end
 end

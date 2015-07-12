@@ -3,12 +3,31 @@ require_relative 'node'
 
 class SparseMatrix
   attr_accessor :header_index
+  attr_reader :width, :height
 
   def initialize(header_index)
     @header_index = header_index
-    @solution = Array.new
+    @solution = Array.new   # TODO: This _probably_ shouldn't live here.
+    @string_rows = Array.new
+    @width = @height = 0
   end
 
+  def <<(string)
+    add(string)
+  end
+
+  def add(string)
+    raise ArgumentError, "Empty string" if string.empty?
+    if @width == 0
+      @width = string.length
+    elsif string.length != @width
+      raise ArgumentError, "Width is: #{string.length}, expected: #{@width}"
+    end
+    @string_rows << string
+    @height += 1
+  end
+
+  # Yields each solution, if any.
   def solve(&b)
     if next_header.nil?
       b.call(@solution.dup)
