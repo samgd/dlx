@@ -85,15 +85,19 @@ class SparseMatrix
     node.header.restore(:row)
   end
 
-  private
-
   def create_matrix
+    raise ArgumentError, "No rows added!" if @height == 0
+
     @matrix = Hash.new { |h,k| h[k] = Hash.new }
+
     # Set column headers.
     (0...@width).each { |j| @matrix[0][j] = Header.new }
-    @string_rows.each_with_index do |row, i|
-      row.each_with_index do |letter, j|
-        @matrix[i][j] = Node.new
+    @height += 1
+
+    # Create nodes
+    @string_rows.each.with_index(1) do |row, i|
+      row.each_char.with_index do |letter, j|
+        @matrix[i][j] = Node.new if letter == "1"
       end
     end
 
@@ -101,11 +105,41 @@ class SparseMatrix
     @header_index.right = @matrix[0][0]
     @header_index.left  = @matrix[0][@width - 1]
 
-    # TODO: Link nodes in matrix
+    # Link nodes
+    (0...@height).each do |i|
+      (0...@width).each do |j|
+        next unless node = @matrix[i][j]
+        node.up    = next_in(:up,    i, j)
+        node.right = next_in(:right, i, j)
+        node.down  = next_in(:down,  i, j)
+        node.left  = next_in(:left,  i, j)
+      end
+    end
+
+    # (Re)link first and last to header
+    @matrix[0][0].left    = @header_index if @matrix[0][0]
+    @matrix[0][@width - 1].right = @header_index if header_end = @matrix[0][@width - 1]
+
+    @matrix
   end
+
+  private
 
   # Find next node in dir, starting from node.
   def next_in(dir, i, j)
-    # TODO: Fill in!
+    node = nil
+    loop do
+      case dir
+      when :up
+        i = (i - 1) % @height
+      when :right
+        j = (j + 1) % @width
+      when :down
+        i = (i + 1) % @height
+      when :left
+        j = (j - 1) % @width
+      end
+      return node if node = @matrix[i][j]
+    end
   end
 end

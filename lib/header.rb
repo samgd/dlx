@@ -2,7 +2,8 @@ require_relative 'node'
 
 class Header < Node
 
-  def initialize
+  def initialize(*args)
+    super(*args)
     @header = self
   end
 

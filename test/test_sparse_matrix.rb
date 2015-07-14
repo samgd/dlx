@@ -129,4 +129,18 @@ class TestSparseMatrix < MiniTest::Test
     assert_raises(ArgumentError) { @sparse_matrix << "1" * 9 }
     assert_raises(ArgumentError) { @sparse_matrix << "1" * 11 }
   end
+
+  def test_create_matrix_nodes_linked
+    header = Header.new(up: self, down: self)
+    matrix = SparseMatrix.new(header)
+    matrix.add("11")
+    matrix.add("10")
+    m = matrix.create_matrix
+
+    assert_equal m[0][0], header.right
+    assert_equal m[0][1], header.right.right
+    assert_equal header,  header.right.right.right
+
+    assert_equal header, header.right.down.down.right.up.up.left
+  end
 end
