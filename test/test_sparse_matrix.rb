@@ -57,11 +57,22 @@ class TestSparseMatrix < MiniTest::Test
     assert_equal @nodes[1][2], @nodes[0][2].down
   end
 
-  def test_solve_yields_correct_solutions_array
+  def test_solve_yields_correct_solutions
     solutions = Array.new
     @sparse_matrix.solve do |solution|
       solutions << solution
     end
+    # Should be one solution.
+    assert_equal 1, solutions.length
+    # Solution should have one row.
+    assert_equal 1, solutions[0].length
+    # Solution in row should be node.
+    assert_instance_of Node, solutions[0][0]
+    assert_equal solutions[0][0], solutions[0][0].right.right.right
+  end
+
+  def test_solve_yields_correct_solutions_array
+    solutions = @sparse_matrix.solve
     # Should be one solution.
     assert_equal 1, solutions.length
     # Solution should have one row.

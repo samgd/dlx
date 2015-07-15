@@ -6,7 +6,6 @@ class SparseMatrix
 
   def initialize
     @header_index = Header.new(0, -1)
-    @solution = Array.new   # TODO: This _probably_ shouldn't live here.
     @string_rows = Array.new
     @width = @height = 0
   end
@@ -27,8 +26,19 @@ class SparseMatrix
     self
   end
 
-  # Yields each solution, if any.
   def solve(&b)
+    @solution = Array.new
+    if b
+      search(&b)
+    else
+      solutions = Array.new
+      search { |solution| solutions << solution }
+      solutions
+    end
+  end
+
+  # Yields each solution, if any.
+  def search(&b)
     if next_header.nil?
       b.call(@solution.dup)
     else
@@ -42,7 +52,7 @@ class SparseMatrix
           cover(rightNode)
         end
 
-        solve(&b)
+        search(&b)
         @solution.delete(rowNode)
 
         rowNode.each_in(:left) do |leftNode|
