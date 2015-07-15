@@ -28,4 +28,8 @@ class TestHeader < MiniTest::Test
   def test_header_returns_header_as_self
     assert_equal @header, @header.header
   end
+
+  def test_to_s_is_overridden
+    assert_equal "Header[0][0]", @header.to_s
+  end
 end

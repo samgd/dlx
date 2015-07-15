@@ -11,6 +11,10 @@ class Header < Node
     @total ||= calc_total
   end
 
+  def to_s
+    "Header[#{row}][#{col}]"
+  end
+
   private
 
   def calc_total
