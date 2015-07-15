@@ -48,4 +48,8 @@ class Node
       yield node
     end
   end
+
+  def to_s
+    "Node[#{row}][#{col}]"
+  end
 end

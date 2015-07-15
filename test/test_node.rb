@@ -49,4 +49,8 @@ class TestNode < MiniTest::Test
     assert_equal @nodes[0][1].down, mid_node
     assert_equal @nodes[2][1].up,   mid_node
   end
+
+  def test_to_s_is_overridden
+    assert_equal "Node[1][1]", @nodes[1][1].to_s
+  end
 end
