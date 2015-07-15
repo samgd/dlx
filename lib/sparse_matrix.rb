@@ -2,11 +2,10 @@ require_relative 'header'
 require_relative 'node'
 
 class SparseMatrix
-  attr_accessor :header_index
-  attr_reader :width, :height
+  attr_reader :header_index, :width, :height
 
-  def initialize(header_index)
-    @header_index = header_index
+  def initialize
+    @header_index = Header.new(0, -1)
     @solution = Array.new   # TODO: This _probably_ shouldn't live here.
     @string_rows = Array.new
     @width = @height = 0
@@ -91,13 +90,12 @@ class SparseMatrix
     @matrix = Hash.new { |h,k| h[k] = Hash.new }
 
     # Set column headers.
-    (0...@width).each { |j| @matrix[0][j] = Header.new }
-    @height += 1
+    (0...@width).each { |j| @matrix[0][j] = Header.new(0, j) }
 
     # Create nodes
     @string_rows.each.with_index(1) do |row, i|
       row.each_char.with_index do |letter, j|
-        @matrix[i][j] = Node.new if letter == "1"
+        @matrix[i][j] = Node.new(i, j) if letter == "1"
       end
     end
 
@@ -106,7 +104,7 @@ class SparseMatrix
     @header_index.left  = @matrix[0][@width - 1]
 
     # Link nodes
-    (0...@height).each do |i|
+    (0..@height).each do |i|
       (0...@width).each do |j|
         next unless node = @matrix[i][j]
         node.up    = next_in(:up,    i, j)
@@ -131,11 +129,11 @@ class SparseMatrix
     loop do
       case dir
       when :up
-        i = (i - 1) % @height
+        i = (i - 1) % (@height + 1)
       when :right
         j = (j + 1) % @width
       when :down
-        i = (i + 1) % @height
+        i = (i + 1) % (@height + 1)
       when :left
         j = (j - 1) % @width
       end

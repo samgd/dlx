@@ -6,84 +6,55 @@ require 'sparse_matrix'
 class TestSparseMatrix < MiniTest::Test
 
   def setup
-    # Initialize nodes
-    @header_index = Header.new
-    @nodes = Hash.new{ |h,k| h[k] = Hash.new }
-
-    (0..2).each do |header_id|
-      instance_variable_set("@header_#{header_id}", Header.new)
-      (0..header_id).each do |node_id|
-        @nodes[header_id][node_id] = Node.new
-      end
-    end
-
-    # Link nodes
-    @header_index.link({ right: @header_0, left: @header_2 })
-
-    @header_0.link({ up:   @nodes[0][0], right: @header_1,
-                     down: @nodes[0][0], left:  @header_index })
-    @nodes[0][0].link({up:   @header_0, right: @nodes[1][0],
-                       down: @header_0, left:  @nodes[2][0] })
-
-    @header_1.link({ up:   @nodes[1][1], right: @header_2,
-                     down: @nodes[1][0], left:  @header_0 })
-    @nodes[1][0].link({up:   @header_1,    right: @nodes[2][0],
-                       down: @nodes[1][1], left:  @nodes[0][0] })
-    @nodes[1][1].link({up:   @nodes[1][0], right: @nodes[2][1],
-                       down: @header_1,    left:  @nodes[2][1] })
-
-    @header_2.link({ up:   @nodes[2][2], right: @header_index,
-                     down: @nodes[2][0], left:  @header_1 })
-    @nodes[2][0].link({up:   @header_2,    right: @nodes[0][0],
-                       down: @nodes[2][1], left:  @nodes[1][0] })
-    @nodes[2][1].link({up:   @nodes[2][0], right: @nodes[1][1],
-                       down: @nodes[2][2], left:  @nodes[1][1] })
-    @nodes[2][2].link({up:   @nodes[2][1], right: @nodes[2][2],
-                       down: @header_2,    left:  @nodes[2][2] })
-
-    assert_equal 1, @header_0.total
-    assert_equal 2, @header_1.total
-    assert_equal 3, @header_2.total
-
-    @sparse_matrix = SparseMatrix.new(@header_index)
+    @sparse_matrix = SparseMatrix.new
+    @sparse_matrix.add("111")
+    @sparse_matrix.add("011")
+    @sparse_matrix.add("001")
+    @nodes = @sparse_matrix.create_matrix
   end
 
-  def test_sparse_matrix_header_is_header
-    assert_equal @header_index, @sparse_matrix.header_index
+  def test_sparse_matrix_dimensions_are_correct
+    assert_equal 3, @sparse_matrix.height
+    assert_equal 3, @sparse_matrix.width
+  end
+
+  def test_sparse_matrix_header_is_initialized
+    assert_equal 0,  @sparse_matrix.header_index.row
+    assert_equal -1, @sparse_matrix.header_index.col
   end
 
   def test_next_header_has_smallest_total
-    (0..2).each do |header_index|
-      header = instance_variable_get("@header_#{header_index}")
-      assert_equal @sparse_matrix.next_header, header
+    header_totals = Array.new
+    (0...@sparse_matrix.width).each do |n|
+      header = @sparse_matrix.next_header
+      header_totals << header.total
       header.remove(:row)
     end
-    assert_nil @sparse_matrix.next_header,
-      "No headers should mean next_header returns nil"
+    assert_equal header_totals.sort, header_totals
   end
 
-  def test_cover_node_removes_column_row_from_all_columns
-    @sparse_matrix.cover(@nodes[1][1])
+  def test_covering_node_removes_header_and_removes_nodes_in_row_from_their_cols
     h_i = @sparse_matrix.header_index
+    @sparse_matrix.cover(@nodes[2][1])
     # Check header is removed
-    assert_equal @header_0,     h_i.right
-    assert_equal @header_2,     h_i.right.right
-    assert_equal @header_index, h_i.right.right.right
+    assert_equal @nodes[0][0], h_i.right
+    assert_equal @nodes[0][2], h_i.right.right
+    assert_equal h_i,          h_i.right.right.right
     # Check node in row is removed
-    assert_equal @nodes[2][2], @header_2.down
+    assert_equal @nodes[3][2], @nodes[0][2].down
   end
 
-  def test_uncover_node_restores_from_cover
+  def test_uncover_reverts_cover
+    h_i = @sparse_matrix.header_index
     @sparse_matrix.cover(@nodes[1][1])
     @sparse_matrix.uncover(@nodes[1][1])
-    h_i = @sparse_matrix.header_index
     # Check header is restored
-    assert_equal @header_0,     h_i.right
-    assert_equal @header_1,     h_i.right.right
-    assert_equal @header_2,     h_i.right.right.right
-    assert_equal @header_index, h_i.right.right.right.right
+    assert_equal @nodes[0][0],  h_i.right
+    assert_equal @nodes[0][1],  h_i.right.right
+    assert_equal @nodes[0][2],  h_i.right.right.right
+    assert_equal h_i,           h_i.right.right.right.right
     # Check node in row is restored
-    assert_equal @nodes[2][0], @header_2.down
+    assert_equal @nodes[1][2], @nodes[0][2].down
   end
 
   def test_solve_yields_correct_solutions_array
@@ -101,38 +72,43 @@ class TestSparseMatrix < MiniTest::Test
   end
 
   def test_solve_yields_correct_solution_when_two_rows_required
-    # Remove node from first row
-    @nodes[2][0].remove(:row)
-    @nodes[2][0].remove(:column)
+    new_matrix = SparseMatrix.new
+    new_matrix.add("110")
+    new_matrix.add("010")
+    new_matrix.add("001")
+    new_matrix.create_matrix
 
     solutions = Array.new
-    @sparse_matrix.solve do |solution|
+    new_matrix.solve do |solution|
       solutions << solution
     end
 
     assert_equal 1, solutions.length
     assert_equal 2, solutions[0].length
+    # Check first solution row.
     assert_equal solutions[0][0], solutions[0][0].right.right
+    # Check second solution row.
     assert_equal solutions[0][1], solutions[0][1].right
   end
 
   def test_adding_invalid_row_raises_exception
-    assert_equal 0, @sparse_matrix.width
-    assert_equal 0, @sparse_matrix.height
+    new_matrix = SparseMatrix.new
+    assert_equal 0, new_matrix.width
+    assert_equal 0, new_matrix.height
 
-    assert_raises(ArgumentError) { @sparse_matrix << "" }
+    assert_raises(ArgumentError) { new_matrix << "" }
 
-    @sparse_matrix << "0" * 10
-    assert_equal 10, @sparse_matrix.width
-    assert_equal 1,  @sparse_matrix.height
+    new_matrix << "0" * 10
+    assert_equal 10, new_matrix.width
+    assert_equal 1,  new_matrix.height
 
-    assert_raises(ArgumentError) { @sparse_matrix << "1" * 9 }
-    assert_raises(ArgumentError) { @sparse_matrix << "1" * 11 }
+    assert_raises(ArgumentError) { new_matrix << "1" * 9 }
+    assert_raises(ArgumentError) { new_matrix << "1" * 11 }
   end
 
   def test_create_matrix_nodes_linked
-    header = Header.new(up: self, down: self)
-    matrix = SparseMatrix.new(header)
+    matrix = SparseMatrix.new
+    header = matrix.header_index
     matrix.add("11")
     matrix.add("10")
     m = matrix.create_matrix
