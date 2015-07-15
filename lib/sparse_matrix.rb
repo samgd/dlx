@@ -24,6 +24,7 @@ class SparseMatrix
     end
     @string_rows << string
     @height += 1
+    self
   end
 
   # Yields each solution, if any.

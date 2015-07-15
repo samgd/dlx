@@ -8,8 +8,8 @@ class TestSparseMatrix < MiniTest::Test
   def setup
     @sparse_matrix = SparseMatrix.new
     @sparse_matrix.add("111")
-    @sparse_matrix.add("011")
-    @sparse_matrix.add("001")
+                  .add("011")
+                  .add("001")
     @nodes = @sparse_matrix.create_matrix
   end
 
@@ -74,8 +74,8 @@ class TestSparseMatrix < MiniTest::Test
   def test_solve_yields_correct_solution_when_two_rows_required
     new_matrix = SparseMatrix.new
     new_matrix.add("110")
-    new_matrix.add("010")
-    new_matrix.add("001")
+              .add("010")
+              .add("001")
     new_matrix.create_matrix
 
     solutions = Array.new
@@ -110,7 +110,7 @@ class TestSparseMatrix < MiniTest::Test
     matrix = SparseMatrix.new
     header = matrix.header_index
     matrix.add("11")
-    matrix.add("10")
+          .add("10")
     m = matrix.create_matrix
 
     assert_equal m[0][0], header.right
