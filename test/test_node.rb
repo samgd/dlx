@@ -8,7 +8,7 @@ class TestNode < MiniTest::Test
     # Create set of nodes
     (0..2).each do |r|
       (0..2).each do |c|
-         @nodes[r][c] = Node.new
+         @nodes[r][c] = Node.new(r, c)
       end
     end
     # Link nodes to create a toroidal array
