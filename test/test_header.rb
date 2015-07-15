@@ -6,9 +6,9 @@ class TestHeader < MiniTest::Test
 
   def setup
     # Initialize nodes
-    @header = Header.new(0, 0)
-    @node_1 = Node.new(1, 0)
-    @node_2 = Node.new(2, 0)
+    @header = Dlx::Header.new(0, 0)
+    @node_1 = Dlx::Node.new(1, 0)
+    @node_2 = Dlx::Node.new(2, 0)
 
     # Link to form a column
     @header.link({ down: @node_1, up: @node_2 })

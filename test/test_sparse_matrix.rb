@@ -6,7 +6,7 @@ require 'sparse_matrix'
 class TestSparseMatrix < MiniTest::Test
 
   def setup
-    @sparse_matrix = SparseMatrix.new
+    @sparse_matrix = Dlx::SparseMatrix.new
     @sparse_matrix.add("111")
                   .add("011")
                   .add("001")
@@ -67,7 +67,7 @@ class TestSparseMatrix < MiniTest::Test
     # Solution should have one row.
     assert_equal 1, solutions[0].length
     # Solution in row should be node.
-    assert_instance_of Node, solutions[0][0]
+    assert_instance_of Dlx::Node, solutions[0][0]
     assert_equal solutions[0][0], solutions[0][0].right.right.right
   end
 
@@ -78,12 +78,12 @@ class TestSparseMatrix < MiniTest::Test
     # Solution should have one row.
     assert_equal 1, solutions[0].length
     # Solution in row should be node.
-    assert_instance_of Node, solutions[0][0]
+    assert_instance_of Dlx::Node, solutions[0][0]
     assert_equal solutions[0][0], solutions[0][0].right.right.right
   end
 
   def test_solve_yields_correct_solution_when_two_rows_required
-    new_matrix = SparseMatrix.new
+    new_matrix = Dlx::SparseMatrix.new
     new_matrix.add("110")
               .add("010")
               .add("001")
@@ -103,7 +103,7 @@ class TestSparseMatrix < MiniTest::Test
   end
 
   def test_adding_invalid_row_raises_exception
-    new_matrix = SparseMatrix.new
+    new_matrix = Dlx::SparseMatrix.new
     assert_equal 0, new_matrix.width
     assert_equal 0, new_matrix.height
 
@@ -118,7 +118,7 @@ class TestSparseMatrix < MiniTest::Test
   end
 
   def test_create_matrix_nodes_linked
-    matrix = SparseMatrix.new
+    matrix = Dlx::SparseMatrix.new
     header = matrix.header_index
     matrix.add("11")
           .add("10")
