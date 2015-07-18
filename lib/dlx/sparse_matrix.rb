@@ -67,6 +67,10 @@ module Dlx
 
     # Returns header with least total.
     def next_header
+      unless defined? @matrix
+        create_matrix
+      end
+
       min_header = nil
       @header_index.each_in(:right) do |header|
         if !min_header || header.total < min_header.total
