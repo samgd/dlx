@@ -39,32 +39,6 @@ module Dlx
       end
     end
 
-    # Yields each solution, if any.
-    def search(&b)
-      if next_header.nil?
-        b.call(@solution.dup)
-      else
-        header = next_header
-        cover(header)
-
-        header.each_in(:down) do |rowNode|
-          @solution.push(@string_rows[rowNode.row - 1])
-
-          rowNode.each_in(:right) do |rightNode|
-            cover(rightNode)
-          end
-
-          search(&b)
-          @solution.pop
-
-          rowNode.each_in(:left) do |leftNode|
-            uncover(leftNode)
-          end
-        end
-        uncover(header)
-      end
-    end
-
     # Returns header with least total.
     def next_header
       unless defined? @matrix
@@ -101,6 +75,8 @@ module Dlx
       node.header.restore(:row)
     end
 
+    # Creates a matrix from the added rows.  @header_index is created at row=0,
+    # col=-1.  It also adds a row of header nodes at row=0, starting at col=1.
     def create_matrix
       raise ArgumentError, "No rows added!" if @height == 0
 
@@ -138,9 +114,7 @@ module Dlx
       @matrix
     end
 
-    private
-
-    # Find next node in dir, starting from node.
+    # Find next node in dir, starting from position i, j in the matrix.
     def next_in(dir, i, j)
       node = nil
       loop do
@@ -155,6 +129,33 @@ module Dlx
           j = (j - 1) % @width
         end
         return node if node = @matrix[i][j]
+      end
+    end
+
+    private
+
+    def search(&b)
+      if next_header.nil?
+        b.call(@solution.dup)
+      else
+        header = next_header
+        cover(header)
+
+        header.each_in(:down) do |rowNode|
+          @solution.push(@string_rows[rowNode.row - 1])
+
+          rowNode.each_in(:right) do |rightNode|
+            cover(rightNode)
+          end
+
+          search(&b)
+          @solution.pop
+
+          rowNode.each_in(:left) do |leftNode|
+            uncover(leftNode)
+          end
+        end
+        uncover(header)
       end
     end
   end
