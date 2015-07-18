@@ -22,6 +22,11 @@ class TestSparseMatrix < MiniTest::Test
     assert_equal -1, @sparse_matrix.header_index.col
   end
 
+  def test_sparse_matrix_rows_are_correct
+    assert_equal ["111", "011", "001"].sort,
+                 @sparse_matrix.rows.sort
+  end
+
   def test_next_header_has_smallest_total
     header_totals = Array.new
     (0...@sparse_matrix.width).each do |n|

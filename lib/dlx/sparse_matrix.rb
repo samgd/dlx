@@ -27,6 +27,10 @@ module Dlx
       self
     end
 
+    def rows
+      @string_rows
+    end
+
     def solve(&block)
       @solution = Array.new
       create_matrix
