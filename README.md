@@ -29,13 +29,21 @@ TODO: Release as a gem.
 require 'dlx/sparse_matrix'
 
 matrix = Dlx::SparseMatrix.new
+
 matrix.add("1001001")
       .add("1001000")
       .add("0001101")
       .add("0010110")
       .add("0110011")
 matrix << "0100001"
-solutions = matrix.solve
+
+# No guarentee is given on the row order.
+matrix.rows
+=> ["1001001", "1001000", "0001101", "0010110", "0110011", "0100001"]
+
+matrix.solve
+=> [["1001000", "0100001", "0010110"]]
+
 ```
 
 ## Contributing
