@@ -10,7 +10,6 @@ class TestSparseMatrix < MiniTest::Test
     @sparse_matrix.add("111")
                   .add("011")
                   .add("001")
-    @nodes = @sparse_matrix.create_matrix
   end
 
   def test_sparse_matrix_dimensions_are_correct
@@ -34,27 +33,29 @@ class TestSparseMatrix < MiniTest::Test
   end
 
   def test_covering_node_removes_header_and_removes_nodes_in_row_from_their_cols
-    h_i = @sparse_matrix.header_index
-    @sparse_matrix.cover(@nodes[2][1])
+    h_i   = @sparse_matrix.header_index
+    nodes = @sparse_matrix.create_matrix
+    @sparse_matrix.cover(nodes[2][1])
     # Check header is removed
-    assert_equal @nodes[0][0], h_i.right
-    assert_equal @nodes[0][2], h_i.right.right
-    assert_equal h_i,          h_i.right.right.right
+    assert_equal nodes[0][0], h_i.right
+    assert_equal nodes[0][2], h_i.right.right
+    assert_equal h_i,         h_i.right.right.right
     # Check node in row is removed
-    assert_equal @nodes[3][2], @nodes[0][2].down
+    assert_equal nodes[3][2], nodes[0][2].down
   end
 
   def test_uncover_reverts_cover
-    h_i = @sparse_matrix.header_index
-    @sparse_matrix.cover(@nodes[1][1])
-    @sparse_matrix.uncover(@nodes[1][1])
+    h_i   = @sparse_matrix.header_index
+    nodes = @sparse_matrix.create_matrix
+    @sparse_matrix.cover(nodes[1][1])
+    @sparse_matrix.uncover(nodes[1][1])
     # Check header is restored
-    assert_equal @nodes[0][0],  h_i.right
-    assert_equal @nodes[0][1],  h_i.right.right
-    assert_equal @nodes[0][2],  h_i.right.right.right
+    assert_equal nodes[0][0],  h_i.right
+    assert_equal nodes[0][1],  h_i.right.right
+    assert_equal nodes[0][2],  h_i.right.right.right
     assert_equal h_i,           h_i.right.right.right.right
     # Check node in row is restored
-    assert_equal @nodes[1][2], @nodes[0][2].down
+    assert_equal nodes[1][2], nodes[0][2].down
   end
 
   def test_solve_yields_correct_solutions
@@ -70,7 +71,7 @@ class TestSparseMatrix < MiniTest::Test
     assert_equal "111", solutions[0][0]
   end
 
-  def test_solve_yields_correct_solutions_array
+  def test_solve_returns_correct_solutions_array
     solutions = @sparse_matrix.solve
     # Should be one solution.
     assert_equal 1, solutions.length
@@ -80,12 +81,11 @@ class TestSparseMatrix < MiniTest::Test
     assert_equal "111", solutions[0][0]
   end
 
-  def test_solve_yields_correct_solution_when_two_rows_required
+  def test_solve_returns_correct_solution_when_two_rows_required
     new_matrix = Dlx::SparseMatrix.new
     new_matrix.add("110")
               .add("010")
               .add("001")
-    new_matrix.create_matrix
 
     solutions = Array.new
     new_matrix.solve do |solution|
@@ -110,34 +110,21 @@ class TestSparseMatrix < MiniTest::Test
     assert_raises(ArgumentError) { @sparse_matrix << "1" * (width + 1) }
   end
 
-  def test_create_matrix_nodes_linked
+  def test_create_matrix_nodes_are_correctly_linked
     matrix = Dlx::SparseMatrix.new
     header = matrix.header_index
     matrix.add("11")
           .add("10")
-    m = matrix.create_matrix
+    nodes = matrix.create_matrix
 
-    assert_equal m[0][0], header.right
-    assert_equal m[0][1], header.right.right
+    assert_equal nodes[0][0], header.right
+    assert_equal nodes[0][1], header.right.right
     assert_equal header,  header.right.right.right
 
     assert_equal header, header.right.down.down.right.up.up.left
   end
 
-  def test_solve_yields_correct_solutions_for_larger_matrix
-    matrix = Dlx::SparseMatrix.new
-    matrix.add("1001001")
-          .add("1001000")
-          .add("0001101")
-          .add("0010110")
-          .add("0110011")
-          .add("0100001")
-    matrix.create_matrix
-    assert_equal ["1001000", "0100001", "0010110"].sort,
-                 matrix.solve[0].sort
-  end
-
-  def test_solve_returns_results_without_calling_create_matrix
+  def test_solve_returns_correct_solution_for_larger_matrix
     matrix = Dlx::SparseMatrix.new
     matrix.add("1001001")
           .add("1001000")
