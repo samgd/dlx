@@ -47,14 +47,14 @@ module Dlx
         cover(header)
 
         header.each_in(:down) do |rowNode|
-          @solution.push(rowNode)
+          @solution.push(@string_rows[rowNode.row - 1])
 
           rowNode.each_in(:right) do |rightNode|
             cover(rightNode)
           end
 
           search(&b)
-          @solution.delete(rowNode)
+          @solution.pop
 
           rowNode.each_in(:left) do |leftNode|
             uncover(leftNode)

@@ -66,9 +66,8 @@ class TestSparseMatrix < MiniTest::Test
     assert_equal 1, solutions.length
     # Solution should have one row.
     assert_equal 1, solutions[0].length
-    # Solution in row should be node.
-    assert_instance_of Dlx::Node, solutions[0][0]
-    assert_equal solutions[0][0], solutions[0][0].right.right.right
+
+    assert_equal "111", solutions[0][0]
   end
 
   def test_solve_yields_correct_solutions_array
@@ -78,8 +77,7 @@ class TestSparseMatrix < MiniTest::Test
     # Solution should have one row.
     assert_equal 1, solutions[0].length
     # Solution in row should be node.
-    assert_instance_of Dlx::Node, solutions[0][0]
-    assert_equal solutions[0][0], solutions[0][0].right.right.right
+    assert_equal "111", solutions[0][0]
   end
 
   def test_solve_yields_correct_solution_when_two_rows_required
@@ -96,10 +94,7 @@ class TestSparseMatrix < MiniTest::Test
 
     assert_equal 1, solutions.length
     assert_equal 2, solutions[0].length
-    # Check first solution row.
-    assert_equal solutions[0][0], solutions[0][0].right.right
-    # Check second solution row.
-    assert_equal solutions[0][1], solutions[0][1].right
+    assert_equal ["110", "001"].sort, solutions[0].sort
   end
 
   def test_adding_invalid_row_raises_exception
