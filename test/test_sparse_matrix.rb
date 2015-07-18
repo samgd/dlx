@@ -98,18 +98,16 @@ class TestSparseMatrix < MiniTest::Test
   end
 
   def test_adding_invalid_row_raises_exception
-    new_matrix = Dlx::SparseMatrix.new
-    assert_equal 0, new_matrix.width
-    assert_equal 0, new_matrix.height
+    assert_raises(ArgumentError) { @sparse_matrix << "" }
 
-    assert_raises(ArgumentError) { new_matrix << "" }
+    old_height = @sparse_matrix.height
+    width = @sparse_matrix.width
 
-    new_matrix << "0" * 10
-    assert_equal 10, new_matrix.width
-    assert_equal 1,  new_matrix.height
+    @sparse_matrix << "0" * width
+    assert_equal old_height + 1,  @sparse_matrix.height
 
-    assert_raises(ArgumentError) { new_matrix << "1" * 9 }
-    assert_raises(ArgumentError) { new_matrix << "1" * 11 }
+    assert_raises(ArgumentError) { @sparse_matrix << "1" * (width - 1) }
+    assert_raises(ArgumentError) { @sparse_matrix << "1" * (width + 1) }
   end
 
   def test_create_matrix_nodes_linked
