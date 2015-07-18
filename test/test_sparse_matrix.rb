@@ -136,4 +136,16 @@ class TestSparseMatrix < MiniTest::Test
     assert_equal ["1001000", "0100001", "0010110"].sort,
                  matrix.solve[0].sort
   end
+
+  def test_solve_returns_results_without_calling_create_matrix
+    matrix = Dlx::SparseMatrix.new
+    matrix.add("1001001")
+          .add("1001000")
+          .add("0001101")
+          .add("0010110")
+          .add("0110011")
+          .add("0100001")
+    assert_equal ["1001000", "0100001", "0010110"].sort,
+                 matrix.solve[0].sort
+  end
 end

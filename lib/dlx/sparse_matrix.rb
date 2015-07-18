@@ -29,6 +29,7 @@ module Dlx
 
     def solve(&b)
       @solution = Array.new
+      create_matrix
       if b
         search(&b)
       else
