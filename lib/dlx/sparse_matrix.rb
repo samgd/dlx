@@ -27,11 +27,11 @@ module Dlx
       self
     end
 
-    def solve(&b)
+    def solve(&block)
       @solution = Array.new
       create_matrix
-      if b
-        search(&b)
+      if block
+        search(&block)
       else
         solutions = Array.new
         search { |solution| solutions << solution }
