@@ -15,13 +15,12 @@
 > the digit 1 appears in each column exactly once.
 > [More](https://en.wikipedia.org/wiki/Knuth%27s_Algorithm_X)
 
-## Status
-
-On the verge of release.  API may change.  Documentation needs to be written.
 
 ## Installation
 
-TODO: Release as a gem.
+```
+gem install dlx
+```
 
 ## Usage
 

@@ -1,7 +1,7 @@
 # coding: utf-8
 Gem::Specification.new do |spec|
   spec.name          = "dlx"
-  spec.version       = '0.0.1'
+  spec.version       = '0.0.2'
   spec.date          = '2015-07-23'
   spec.authors       = ["Sam Davis"]
   spec.email         = ["sam@samgd.com"]
