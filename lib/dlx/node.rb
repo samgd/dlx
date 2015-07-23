@@ -1,18 +1,12 @@
 module Dlx
   class Node
-    attr_accessor :up, :right, :down, :left, :row, :col
+    attr_reader :row, :col, :header
+    attr_accessor :up, :right, :down, :left
 
-    def initialize(row, col, up = self, right = self, down = self, left = self)
-      @row = row
-      @col = col
-      @up     = up
-      @right  = right
-      @down   = down
-      @left   = left
-    end
-
-    def header
-      @header ||= each_in(:down) { |node| return node if node.instance_of? Header }
+    def initialize(row, col, header, up = self, right = self, down = self, left = self)
+      @row, @col = row, col
+      @header = header
+      @up, @right, @down, @left = up, right, down, left
     end
 
     def link(nodes)
@@ -20,6 +14,32 @@ module Dlx
     end
 
     def remove(type)
+      header.total -= 1 if type == :column
+      simple_remove(type)
+    end
+
+    def restore(type)
+      header.total += 1 if type == :column
+      simple_restore(type)
+    end
+
+    # Traverses doubly linked list in the specified direction.
+    # Begins with yieding adjacent node, breaks _before_ yielding self.
+    def each_in(direction)
+      return enum_for(:each_in, direction) unless block_given?
+      node = self
+      until (node = node.send(direction)) == self do
+        yield node
+      end
+    end
+
+    def to_s
+      "Node[#{row}][#{col}]"
+    end
+
+    private
+
+    def simple_remove(type)
       case type
       when :row
         left.right = right
@@ -30,7 +50,7 @@ module Dlx
       end
     end
 
-    def restore(type)
+    def simple_restore(type)
       case type
       when :row
         left.right = self
@@ -39,19 +59,6 @@ module Dlx
         up.down = self
         down.up = self
       end
-    end
-
-    # Traverses doubly linked list in the specified direction.
-    # Begins with yieding adjacent node, breaks _before_ yielding self.
-    def each_in(direction)
-      node = self
-      until (node = node.send(direction)) == self do
-        yield node
-      end
-    end
-
-    def to_s
-      "Node[#{row}][#{col}]"
     end
   end
 end

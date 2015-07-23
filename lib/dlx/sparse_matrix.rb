@@ -3,12 +3,13 @@ require_relative 'node'
 
 module Dlx
   class SparseMatrix
-    attr_reader :header_index, :width, :height
+    attr_reader :root, :width, :height, :headers
 
     def initialize
-      @header_index = Dlx::Header.new(0, -1)
+      @root = Dlx::Header.new(0, -1)
       @string_rows = Array.new
       @width = @height = 0
+      @headers = Array.new
     end
 
     def <<(string)
@@ -19,12 +20,44 @@ module Dlx
       raise ArgumentError, "Empty string" if string.empty?
       if @width == 0
         @width = string.length
+        create_headers
       elsif string.length != @width
         raise ArgumentError, "Width is: #{string.length}, expected: #{@width}"
       end
+
+      row = []
+      string.scan(/./).zip(@headers).each do |l, header|
+        if l == "1"
+          node = Dlx::Node.new(@height, header.col, header)
+          row << node
+          header.add(node)
+        end
+      end
+
+      link_row(row)
+
       @string_rows << string
       @height += 1
       self
+    end
+
+    def create_headers
+      @width.times do |col|
+        @headers << Dlx::Header.new(0, col)
+      end
+      link_row(@headers)
+      @root.right = @headers.first
+      @root.right.left = @root
+      @root.left = @headers.last
+      @root.left.right = @root
+    end
+
+    def link_row(row)
+      row_length = row.length
+      row.each_with_index do |node, i|
+        node.link({ right: row[(i+1) % row_length],
+                    left:  row[(i-1) % row_length]})
+      end
     end
 
     def rows
@@ -32,25 +65,19 @@ module Dlx
     end
 
     def solve(&block)
-      @solution = Array.new
-      create_matrix
       if block
-        search(&block)
+        search(0, [], &block)
       else
         solutions = Array.new
-        search { |solution| solutions << solution }
+        search(0, []) { |solution| solutions << solution }
         solutions
       end
     end
 
     # Returns header with least total.
     def next_header
-      unless defined? @matrix
-        create_matrix
-      end
-
       min_header = nil
-      @header_index.each_in(:right) do |header|
+      @root.each_in(:right) do |header|
         if !min_header || header.total < min_header.total
           min_header = header
         end
@@ -63,101 +90,36 @@ module Dlx
     def cover(node)
       node.header.remove(:row)
       node.header.each_in(:down) do |row|
-        row.each_in(:right) do |n|
-          n.remove(:column)
-        end
+        row.each_in(:right) { |n| n.remove(:column) }
       end
     end
 
     # Reverses cover.
     def uncover(node)
       node.header.each_in(:up) do |row|
-        row.each_in(:left) do |n|
-          n.restore(:column)
-        end
+        row.each_in(:left) { |n| n.restore(:column) }
       end
       node.header.restore(:row)
     end
 
-    # Creates a matrix from the added rows.  @header_index is created at row=0,
-    # col=-1.  It also adds a row of header nodes at row=0, starting at col=1.
-    def create_matrix
-      raise ArgumentError, "No rows added!" if @height == 0
-
-      @matrix = Hash.new { |h,k| h[k] = Hash.new }
-
-      # Set column headers.
-      (0...@width).each { |j| @matrix[0][j] = Dlx::Header.new(0, j) }
-
-      # Create nodes
-      @string_rows.each.with_index(1) do |row, i|
-        row.each_char.with_index do |letter, j|
-          @matrix[i][j] = Dlx::Node.new(i, j) if letter == "1"
-        end
-      end
-
-      # Link header index.
-      @header_index.right = @matrix[0][0]
-      @header_index.left  = @matrix[0][@width - 1]
-
-      # Link nodes
-      (0..@height).each do |i|
-        (0...@width).each do |j|
-          next unless node = @matrix[i][j]
-          node.up    = next_in(:up,    i, j)
-          node.right = next_in(:right, i, j)
-          node.down  = next_in(:down,  i, j)
-          node.left  = next_in(:left,  i, j)
-        end
-      end
-
-      # (Re)link first and last to header
-      @matrix[0][0].left    = @header_index if @matrix[0][0]
-      @matrix[0][@width - 1].right = @header_index if header_end = @matrix[0][@width - 1]
-
-      @matrix
-    end
-
-    # Find next node in dir, starting from position i, j in the matrix.
-    def next_in(dir, i, j)
-      node = nil
-      loop do
-        case dir
-        when :up
-          i = (i - 1) % (@height + 1)
-        when :right
-          j = (j + 1) % @width
-        when :down
-          i = (i + 1) % (@height + 1)
-        when :left
-          j = (j - 1) % @width
-        end
-        return node if node = @matrix[i][j]
-      end
-    end
-
     private
 
-    def search(&b)
+    def search(n, solution, &b)
       if next_header.nil?
-        b.call(@solution.dup)
+        b.call(solution.dup)
       else
         header = next_header
         cover(header)
 
         header.each_in(:down) do |rowNode|
-          @solution.push(@string_rows[rowNode.row - 1])
+          solution.push(@string_rows[rowNode.row])
 
-          rowNode.each_in(:right) do |rightNode|
-            cover(rightNode)
-          end
+          rowNode.each_in(:right) { |rightNode| cover(rightNode) }
 
-          search(&b)
-          @solution.pop
+          search(n + 1, solution, &b)
+          solution.pop
 
-          rowNode.each_in(:left) do |leftNode|
-            uncover(leftNode)
-          end
+          rowNode.each_in(:left) { |leftNode| uncover(leftNode) }
         end
         uncover(header)
       end

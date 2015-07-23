@@ -7,13 +7,12 @@ class TestHeader < MiniTest::Test
   def setup
     # Initialize nodes
     @header = Dlx::Header.new(0, 0)
-    @node_1 = Dlx::Node.new(1, 0)
-    @node_2 = Dlx::Node.new(2, 0)
+    @node_1 = Dlx::Node.new(1, 0, @header)
+    @node_2 = Dlx::Node.new(2, 0, @header)
 
     # Link to form a column
-    @header.link({ down: @node_1, up: @node_2 })
-    @node_1.link({ down: @node_2, up: @header })
-    @node_2.link({ down: @header, up: @node_1 })
+    @header.add(@node_1)
+           .add(@node_2)
   end
 
   def test_header_total_equals_sum_of_nodes_in_column

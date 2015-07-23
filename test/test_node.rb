@@ -1,14 +1,17 @@
 require 'minitest/autorun'
 require 'node'
+require 'header'
 
 class TestNode < MiniTest::Test
 
   def setup
+    @header_stub = Dlx::Header.new(-1, -1)
+
     @nodes = Hash.new{ |h,k| h[k] = Hash.new }
     # Create set of nodes
     (0..2).each do |r|
       (0..2).each do |c|
-         @nodes[r][c] = Dlx::Node.new(r, c)
+         @nodes[r][c] = Dlx::Node.new(r, c, @header_stub)
       end
     end
     # Link nodes to create a toroidal array

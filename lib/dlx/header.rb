@@ -3,25 +3,37 @@ require_relative 'node'
 module Dlx
   class Header < Node
 
-    def initialize(*args)
-      super(*args)
-      @header = self
+    attr_accessor :total
+
+    def initialize(row, col, *args)
+      super(row, col, self, *args)
+      @total = 0
     end
 
-    def total
-      @total ||= calc_total
+    # Adds a node to the bottom of Header's column.
+    def add(node)
+      @total += 1
+      u = self.up
+
+      up.down = node
+      node.up = up
+
+      node.down = self
+      self.up = node
+
+      self
+    end
+
+    def remove(type)
+      simple_remove(type)
+    end
+
+    def restore(type)
+      simple_restore(type)
     end
 
     def to_s
       "Header[#{row}][#{col}]"
-    end
-
-    private
-
-    def calc_total
-      @total = 0
-      each_in(:down) { |node| @total += 1 }
-      @total
     end
   end
 end
