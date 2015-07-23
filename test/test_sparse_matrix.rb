@@ -21,7 +21,7 @@ class TestSparseMatrix < MiniTest::Test
 
   def test_sparse_matrix_header_is_initialized
     assert_equal 0,  @sparse_matrix.root.row
-    assert_equal -1, @sparse_matrix.root.col
+    assert_equal (-1), @sparse_matrix.root.col
   end
 
   def test_sparse_matrix_rows_are_correct

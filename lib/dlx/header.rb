@@ -13,7 +13,6 @@ module Dlx
     # Adds a node to the bottom of Header's column.
     def add(node)
       @total += 1
-      u = self.up
 
       up.down = node
       node.up = up
