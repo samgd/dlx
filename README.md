@@ -17,11 +17,9 @@
 
 ## Status
 
-On the verge of release.  API may change.  Documentation needs to be written.
+It is slow.  I could rewrite it to be faster but it has already been done!
 
-## Installation
-
-TODO: Release as a gem.
+https://github.com/biilmann/Ruby-DLX-Sudoku-Solver
 
 ## Usage
 
@@ -45,14 +43,6 @@ matrix.solve
 => [["1001000", "0100001", "0010110"]]
 
 ```
-
-## Contributing
-
-1. Fork it!
-2. Create your feature branch: `git checkout -b my-new-feature`
-3. Commit your changes: `git commit -am 'Add some feature'`
-4. Push to the branch: `git push origin my-new-feature`
-5. Submit a pull request :D
 
 ## License
 
