@@ -17,9 +17,11 @@
 
 ## Status
 
-It is slow.  I could rewrite it to be faster but it has already been done!
+On the verge of release.  API may change.  Documentation needs to be written.
 
-https://github.com/biilmann/Ruby-DLX-Sudoku-Solver
+## Installation
+
+TODO: Release as a gem.
 
 ## Usage
 
@@ -27,22 +29,22 @@ https://github.com/biilmann/Ruby-DLX-Sudoku-Solver
 require 'dlx/sparse_matrix'
 
 matrix = Dlx::SparseMatrix.new
-
 matrix.add("1001001")
       .add("1001000")
       .add("0001101")
       .add("0010110")
       .add("0110011")
 matrix << "0100001"
-
-# No guarentee is given on the row order.
-matrix.rows
-=> ["1001001", "1001000", "0001101", "0010110", "0110011", "0100001"]
-
-matrix.solve
-=> [["1001000", "0100001", "0010110"]]
-
+solutions = matrix.solve
 ```
+
+## Contributing
+
+1. Fork it!
+2. Create your feature branch: `git checkout -b my-new-feature`
+3. Commit your changes: `git commit -am 'Add some feature'`
+4. Push to the branch: `git push origin my-new-feature`
+5. Submit a pull request :D
 
 ## License
 
